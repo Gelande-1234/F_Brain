@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  client:
+    build: ./Client
+    ports:
+      - "5173:5173"
+      - "4173:4173"
+    container_name: client
+
+  server:
+    build: ./Server
+    ports:
+      - "8000:8000"
+    container_name: server
+
+  monitoring:
+    build: ./Monitoring
+    ports:
+      - "3000:3000"
+    container_name: monitoring
+
+  python-dev:
+    build: ./Python
+    ports:
+      - "2222:22"
+    container_name: python-dev
+    tty: true
