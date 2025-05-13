@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "server"
+version = "0.1.0"
+description = ""
+authors = ["Gelande-1234 <angegelande@gmail.com>"]
+readme = "README.md"
+packages = [
+    { include = "backend" },
+    
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+django = "^4.2.1"
+celery = "^5.2"
+redis = "^4.0"  # Si tu utilises Redis
+psycopg2 = "^2.9"  # Pour PostgreSQL
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
