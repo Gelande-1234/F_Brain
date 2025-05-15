@@ -1,0 +1,5 @@
+# Exclure le répertoire prometheus-bin
+monitoring/prometheus/prometheus-bin/
+
+# Exclure les archives tar.gz de Prometheus
+monitoring/prometheus-*.tar.gz
