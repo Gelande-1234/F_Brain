@@ -1,4 +1,4 @@
-# 🧠 TaskBrain
+# 🧠 TaskBrain Test
 
 TaskBrain est une application de gestion de tâches collaboratives . Elle permet de créer, suivre et organiser vos tâches quotidiennes avec rappels, sous-tâches, et une vue "My Day". Le tout est propulsé par un backend Django REST, un frontend React, une architecture asynchrone avec Celery, et un monitoring complet via Prometheus & Grafana.
 
