@@ -1,15 +1,20 @@
-# server/Dockerfile
 FROM python:3.11-slim
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
 
+# Définir le répertoire de travail
 WORKDIR /app
 
-RUN pip install --upgrade pip && pip install poetry
+# Copier les fichiers de dépendances
 COPY pyproject.toml poetry.lock ./
-RUN poetry config virtualenvs.create false && poetry install --no-interaction
 
+# Installer Poetry
+RUN pip install poetry
+
+# Installer les dépendances sans installer le projet lui-même
+RUN poetry install --no-root
+
+# Copier le code source
 COPY . .
 
-EXPOSE 8000
-CMD ["gunicorn", "server.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Appliquer les migrations automatiquement au démarrage (optionnel)
+CMD ["poetry", "run", "python", "manage.py", "migrate", "--noinput"] && \
+    ["poetry", "run", "gunicorn", "server.wsgi:application", "--bind", "0.0.0.0:8000"]
