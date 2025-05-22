@@ -15,6 +15,8 @@ RUN poetry install --no-root
 # Copier le code source
 COPY . .
 
-# Appliquer les migrations automatiquement au démarrage (optionnel)
-CMD ["poetry", "run", "python", "manage.py", "migrate", "--noinput"] && \
-    ["poetry", "run", "gunicorn", "server.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Rendre le script exécutable
+RUN chmod +x entrypoint.sh
+
+# Utiliser le script comme point d'entrée
+CMD ["./entrypoint.sh"]

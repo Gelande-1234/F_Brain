@@ -4,7 +4,7 @@ services:
   client:
     build: ./client
     ports:
-      - "3000:80"
+      - "5173:5173"
 
   server:
     build: ./server
@@ -28,7 +28,7 @@ services:
 
   celery-exporter:
     image: danihodovic/celery-exporter
-    command: ["cli.py", "--broker-url=amqp://guest:guest@rabbitmq:5672//"]
+    command: ["--broker-url=amqp://guest:guest@rabbitmq:5672//"]
     ports:
       - "8888:8888"
 
@@ -45,9 +45,9 @@ services:
   proxy:
     image: nginx:alpine
     volumes:
-      - ./proxy/nginx.conf:/etc/nginx/nginx.conf
+      - ./proxy/default.conf:/etc/nginx/default.conf
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - client
       - server
