@@ -12,6 +12,25 @@ services:
       - "8000:8000"
     depends_on:
       - rabbitmq
+      - postgres
+    environment:
+      - DB_NAME=todo_db
+      - DB_USER=todo_user
+      - DB_PASSWORD=todo_pass
+      - DB_HOST=postgres
+      - DB_PORT=5432
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: todo_db
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: todo_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -25,6 +44,13 @@ services:
     depends_on:
       - server
       - rabbitmq
+      - postgres
+    environment:
+      - DB_NAME=todo_db
+      - DB_USER=todo_user
+      - DB_PASSWORD=todo_pass
+      - DB_HOST=postgres
+      - DB_PORT=5432
 
   celery-exporter:
     image: danihodovic/celery-exporter
@@ -52,3 +78,6 @@ services:
       - client
       - server
       - monitoring
+
+volumes:
+  postgres_data:
