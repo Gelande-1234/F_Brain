@@ -98,3 +98,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Celery configuration
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
 CORS_ALLOW_ALL_ORIGINS = True  # For development, allow all origins
+# DRF config
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}

@@ -1,10 +1,22 @@
-import axios from 'axios';
+const API_URL = 'http://localhost:8000/api/todos/';
 
-const API = axios.create({
-  baseURL: 'http://localhost:8000/api/',
-});
+export async function getTodos(token) {
+  const response = await fetch(API_URL, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  return await response.json();
+}
 
-export const fetchTodos = () => API.get('todos/');
-export const createTodo = (data) => API.post('todos/', data);
-export const updateTodo = (id, data) => API.put(`todos/${id}/`, data);
-export const deleteTodo = (id) => API.delete(`todos/${id}/`);
+export async function toggleComplete(id, completed, token) {
+  const response = await fetch(`${API_URL}${id}/`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ completed: !completed }),
+  });
+  return await response.json();
+}

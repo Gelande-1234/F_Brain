@@ -1,65 +1,64 @@
 import { useEffect, useState } from 'react';
-import {
-  fetchTodos,
-  createTodo,
-  updateTodo,
-  deleteTodo
-} from './api/todos';
+import { getTodos, toggleComplete } from './api/todos';
+import Login from './Login';
 
 function App() {
   const [todos, setTodos] = useState([]);
-  const [title, setTitle] = useState('');
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
-    loadTodos();
-  }, []);
+    if (!token) return;
 
-  const loadTodos = async () => {
-    const res = await fetchTodos();
-    setTodos(res.data);
-  };
+    async function fetchTodos() {
+      try {
+        const data = await getTodos(token);
+        setTodos(data);
+      } catch (error) {
+        console.error("Erreur en récupérant les todos", error);
+        // Si token invalide, on peut le supprimer
+        localStorage.removeItem('token');
+        setToken(null);
+      }
+    }
+    fetchTodos();
+  }, [token]);
 
-  const handleAdd = async () => {
-    if (title.trim() === '') return;
-    await createTodo({ title, completed: false });
-    setTitle('');
-    loadTodos();
-  };
+  async function handleToggle(todo) {
+    try {
+      const updated = await toggleComplete(todo.id, todo.completed, token);
+      setTodos(todos.map(t => (t.id === updated.id ? updated : t)));
+    } catch (error) {
+      console.error("Erreur en mettant à jour le todo", error);
+    }
+  }
 
-  const handleToggle = async (todo) => {
-    await updateTodo(todo.id, { ...todo, completed: !todo.completed });
-    loadTodos();
-  };
+  function handleLogout() {
+    localStorage.removeItem('token');
+    setToken(null);
+    setTodos([]);
+  }
 
-  const handleDelete = async (id) => {
-    await deleteTodo(id);
-    loadTodos();
-  };
+  if (!token) {
+    return <Login onLogin={setToken} />;
+  }
+
+  if (!todos.length) return <div>Chargement des tâches...</div>;
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>✅ ToDo List</h1>
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Nouvelle tâche..."
-      />
-      <button onClick={handleAdd}>Ajouter</button>
-
-      <ul>
+    <div className="container">
+      <h1>📝 Mes Tâches</h1>
+      <button onClick={handleLogout} style={{ marginBottom: '10px' }}>
+        Se déconnecter
+      </button>
+      <ul className="list-group">
         {todos.map(todo => (
-          <li key={todo.id}>
-            <span
+          <li key={todo.id} className="list-group-item d-flex justify-content-between">
+            <span>{todo.title}</span>
+            <button
+              className={`btn btn-sm ${todo.completed ? 'btn-success' : 'btn-outline-secondary'}`}
               onClick={() => handleToggle(todo)}
-              style={{
-                cursor: 'pointer',
-                textDecoration: todo.completed ? 'line-through' : 'none',
-              }}
             >
-              {todo.title}
-            </span>
-            <button onClick={() => handleDelete(todo.id)} style={{ marginLeft: 10 }}>
-              ❌
+              {todo.completed ? '✔' : '⏳'}
             </button>
           </li>
         ))}
