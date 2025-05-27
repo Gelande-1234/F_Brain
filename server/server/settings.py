@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -41,7 +42,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # CORS middleware
+    
 ]
 
 ROOT_URLCONF = 'server.urls'
@@ -106,4 +107,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ]
+}
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),  # Token d'accès valide 1h
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Refresh token valide 7 jours
+    'ROTATE_REFRESH_TOKENS': False,                  # Ne pas renouveler le refresh token à chaque refresh
+    'AUTH_HEADER_TYPES': ('Bearer',),                 # Type dans l'en-tête Authorization
 }

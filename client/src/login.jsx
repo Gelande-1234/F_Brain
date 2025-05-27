@@ -23,9 +23,12 @@ function Login({ onLogin }) {
       }
 
       const data = await response.json();
-      // data.access contient le token JWT
+
+      // Stocker access et refresh tokens dans localStorage
       localStorage.setItem('token', data.access);
-      onLogin(data.access); // on prévient le parent que c’est ok
+      localStorage.setItem('refresh', data.refresh);
+
+      onLogin(data.access); // prévenir le parent que la connexion est ok
     } catch (err) {
       setError(err.message);
     } finally {
