@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from './AuthContext';
 
-function Login({ onLogin }) {
+function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const { login } = useContext(AuthContext);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -24,11 +27,11 @@ function Login({ onLogin }) {
 
       const data = await response.json();
 
-      // Stocker access et refresh tokens dans localStorage
-      localStorage.setItem('token', data.access);
-      localStorage.setItem('refresh', data.refresh);
+      // Utilise la méthode login de ton contexte
+      login(data.access, data.refresh);
 
-      onLogin(data.access); // prévenir le parent que la connexion est ok
+      // Redirection après login réussi
+      window.location.href = '/'; // ou tableau de bord
     } catch (err) {
       setError(err.message);
     } finally {
