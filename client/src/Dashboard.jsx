@@ -2,20 +2,24 @@ import React, { useEffect, useState, useContext } from 'react';
 import {
   AppBar, Toolbar, Typography, Container, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Paper,
-  Checkbox, IconButton, TextField, Button
+  Checkbox, IconButton, TextField, Button, Box, Drawer, List,
+  ListItem, ListItemText, ListItemIcon, Divider
 } from '@mui/material';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import LogoutIcon from '@mui/icons-material/Logout';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 import { useTodosApi } from './api/todos';
 import { AuthContext } from './AuthContext';
 import { Navigate } from 'react-router-dom';
 
+const drawerWidth = 240;
+
 function Dashboard() {
   const { logout, accessToken } = useContext(AuthContext);
 
-  // Protection du composant
   if (!accessToken) {
     return <Navigate to="/login" replace />;
   }
@@ -87,69 +91,109 @@ function Dashboard() {
   };
 
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="h6">📝 Tableau de bord ToDo</Typography>
-          <Button color="inherit" startIcon={<LogoutIcon />} onClick={logout}>
-            Se déconnecter
-          </Button>
-        </Toolbar>
-      </AppBar>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+      {/* Menu latéral */}
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+        }}
+      >
+        <Toolbar />
+        <Box sx={{ overflow: 'auto' }}>
+          <List>
+            <ListItem>
+              <Typography variant="h6">Menu</Typography>
+            </ListItem>
+            <Divider />
+            <ListItem button>
+              <ListItemIcon><DashboardIcon /></ListItemIcon>
+              <ListItemText primary="Dashboard" />
+            </ListItem>
+            <ListItem button onClick={logout}>
+              <ListItemIcon><LogoutIcon /></ListItemIcon>
+              <ListItemText primary="Déconnexion" />
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
 
-      <Container sx={{ marginTop: 4 }}>
-        <TextField
-          label="Nouvelle tâche"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
-          sx={{ marginRight: 2, width: '60%' }}
-        />
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleAdd}>
-          Ajouter
-        </Button>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        {/* Barre d’en-tête */}
+        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="h6" noWrap component="div">
+              📝 Tableau de bord ToDo
+            </Typography>
+            <Button color="inherit" startIcon={<LogoutIcon />} onClick={logout}>
+              Se déconnecter
+            </Button>
+          </Toolbar>
+        </AppBar>
 
-        <TableContainer component={Paper} sx={{ marginTop: 4 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Terminé</TableCell>
-                <TableCell>Titre</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {todos.length > 0 ? (
-                todos.map((todo) => (
-                  <TableRow key={todo.id} hover>
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={todo.completed}
-                        onChange={() => handleToggle(todo)}
-                      />
-                    </TableCell>
-                    <TableCell sx={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
-                      {todo.title}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton aria-label="delete" color="error" onClick={() => handleDelete(todo.id)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
+        {/* Espace principal */}
+        <Toolbar />
+        <Container maxWidth="md">
+          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} mb={3}>
+            <TextField
+              label="Nouvelle tâche"
+              value={newTodo}
+              onChange={(e) => setNewTodo(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
+              fullWidth
+              sx={{ mr: { sm: 2 }, mb: { xs: 2, sm: 0 } }}
+            />
+            <Button variant="contained" startIcon={<AddIcon />} onClick={handleAdd}>
+              Ajouter
+            </Button>
+          </Box>
+
+          <Paper elevation={3}>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Terminé</TableCell>
+                    <TableCell>Titre</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={3} align="center">
-                    Aucune tâche disponible
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Container>
-    </>
+                </TableHead>
+                <TableBody>
+                  {todos.length > 0 ? (
+                    todos.map((todo) => (
+                      <TableRow key={todo.id} hover>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={todo.completed}
+                            onChange={() => handleToggle(todo)}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+                          {todo.title}
+                        </TableCell>
+                        <TableCell>
+                          <IconButton aria-label="delete" color="error" onClick={() => handleDelete(todo.id)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3} align="center">
+                        Aucune tâche disponible
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Container>
+      </Box>
+    </Box>
   );
 }
 
