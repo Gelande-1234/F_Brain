@@ -123,7 +123,7 @@ function Dashboard() {
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography variant="h6" noWrap component="div">
-              📝 Tableau de bord ToDo
+              📝 TASKBRAIN
             </Typography>
             <Button color="inherit" startIcon={<LogoutIcon />} onClick={logout}>
               Se déconnecter

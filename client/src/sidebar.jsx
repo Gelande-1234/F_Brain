@@ -32,7 +32,7 @@ function Sidebar() {
         </ListItem>
         <ListItem button onClick={logout}>
           <ListItemIcon><LogoutIcon /></ListItemIcon>
-          <ListItemText primary="Déconnexion" />
+          <ListItemText primary="ma journée" />
         </ListItem>
       </List>
     </Drawer>
