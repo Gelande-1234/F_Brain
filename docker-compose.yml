@@ -11,7 +11,6 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - rabbitmq
       - postgres
     environment:
       - DB_NAME=todo_db
@@ -32,31 +31,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: always
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-
-  celery:
-    build: ./server
-    command: poetry run celery -A server worker --loglevel=info
-    depends_on:
-      - server
-      - rabbitmq
-      - postgres
-    environment:
-      - DB_NAME=todo_db
-      - DB_USER=todo_user
-      - DB_PASSWORD=todo_pass
-      - DB_HOST=postgres
-      - DB_PORT=5432
-
-  celery-exporter:
-    image: danihodovic/celery-exporter
-    command: ["--broker-url=amqp://guest:guest@rabbitmq:5672//"]
-    ports:
-      - "8888:8888"
 
   monitoring:
     build: ./monitoring
