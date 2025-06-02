@@ -26,7 +26,11 @@ function Dashboard() {
 
   const { getTodos, toggleComplete, createTodo, deleteTodo } = useTodosApi();
   const [todos, setTodos] = useState([]);
-  const [newTodo, setNewTodo] = useState('');
+  const [newTodo, setNewTodo] = useState({
+    title: '',
+    description: '',
+    priority: 1
+  });
 
   const handleAuthError = () => {
     alert("Votre session a expiré. Veuillez vous reconnecter.");
@@ -63,11 +67,11 @@ function Dashboard() {
   };
 
   const handleAdd = async () => {
-    if (!newTodo.trim()) return;
+    if (!newTodo.title.trim()) return;
     try {
       const added = await createTodo(newTodo);
       setTodos([...todos, added]);
-      setNewTodo('');
+      setNewTodo({ title: '', description: '', priority: 1 });
     } catch (err) {
       if (err.message.toLowerCase().includes('session expirée')) {
         handleAuthError();
@@ -133,16 +137,41 @@ function Dashboard() {
 
         <Toolbar />
         <Container maxWidth={false} sx={{ px: 4 }}>
-          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} mb={3}>
+          <Box display="flex" flexDirection="column" mb={3}>
             <TextField
-              label="Nouvelle tâche"
-              value={newTodo}
-              onChange={(e) => setNewTodo(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
+              label="Titre"
+              value={newTodo.title}
+              onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
               fullWidth
-              sx={{ mr: { sm: 2 }, mb: { xs: 2, sm: 0 } }}
+              margin="dense"
             />
-            <Button variant="contained" startIcon={<AddIcon />} onClick={handleAdd}>
+            <TextField
+              label="Description"
+              value={newTodo.description}
+              onChange={(e) => setNewTodo({ ...newTodo, description: e.target.value })}
+              fullWidth
+              margin="dense"
+              multiline
+              rows={2}
+            />
+            <TextField
+              select
+              label="Priorité"
+              value={newTodo.priority}
+              onChange={(e) => setNewTodo({ ...newTodo, priority: parseInt(e.target.value) })}
+              SelectProps={{ native: true }}
+              margin="dense"
+            >
+              <option value={1}>Bas</option>
+              <option value={2}>Moyen</option>
+              <option value={3}>Haut</option>
+            </TextField>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleAdd}
+              sx={{ mt: 2, alignSelf: 'flex-start' }}
+            >
               Ajouter
             </Button>
           </Box>
@@ -154,6 +183,8 @@ function Dashboard() {
                   <TableRow>
                     <TableCell>Terminé</TableCell>
                     <TableCell>Titre</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell>Priorité</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -170,6 +201,8 @@ function Dashboard() {
                         <TableCell sx={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
                           {todo.title}
                         </TableCell>
+                        <TableCell>{todo.description}</TableCell>
+                        <TableCell>{['', 'Bas', 'Moyen', 'Haut'][todo.priority]}</TableCell>
                         <TableCell>
                           <IconButton aria-label="delete" color="error" onClick={() => handleDelete(todo.id)}>
                             <DeleteIcon />
@@ -179,7 +212,7 @@ function Dashboard() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={3} align="center">
+                      <TableCell colSpan={5} align="center">
                         Aucune tâche disponible
                       </TableCell>
                     </TableRow>
